@@ -5,13 +5,15 @@ use rppal::gpio::{Gpio, Level};
 use rppal::system::DeviceInfo;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    println!("Blinking LED on {}", DeviceInfo::new()?.model());
+    println!("Device {}", DeviceInfo::new()?.model());
     let mut led = Gpio::new()?
-        .get(18)?
+        .get(24)?
         .into_output();
     loop {
+        println!("up");
         led.write(Level::High);
         sleep(Duration::from_secs(1));
+        println!("down");
         led.write(Level::Low);
         sleep(Duration::from_secs(1));
     }

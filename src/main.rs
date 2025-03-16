@@ -6,15 +6,22 @@ use rppal::system::DeviceInfo;
 
 fn main() -> Result<(), Box<dyn Error>> {
     println!("Device {}", DeviceInfo::new()?.model());
-    let mut led = Gpio::new()?
-        .get(24)?
+    let gpio = Gpio::new()?;
+    let mut led = gpio.get(24)?
         .into_output();
+    let mut btn = gpio.get(23)?
+        .into_input();
+    let mut up = false;
     loop {
-        println!("up");
-        led.write(Level::High);
-        sleep(Duration::from_secs(1));
-        println!("down");
-        led.write(Level::Low);
-        sleep(Duration::from_secs(1));
+        if btn.read() == Level::High {
+            up = !up;
+        } else {
+            up = false;
+        }
+        if up {
+            led.write(Level::High);
+        } else {
+            led.write(Level::Low);
+        }
     }
 }

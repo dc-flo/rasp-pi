@@ -1,6 +1,4 @@
 use std::error::Error;
-use std::thread::sleep;
-use std::time::Duration;
 use rppal::gpio::{Gpio, Level};
 use rppal::system::DeviceInfo;
 
@@ -12,16 +10,17 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut btn = gpio.get(23)?
         .into_input();
     let mut up = false;
+    let mut before = false;
     loop {
-        if btn.read() == Level::High {
-            up = !up;
-        } else {
-            up = false;
-        }
-        if up {
-            led.write(Level::High);
-        } else {
-            led.write(Level::Low);
+        before = up;
+        up = btn.is_high();
+        if before != up {
+            println!("Button is {}", if up { "up" } else { "down" });
+            if up {
+                led.write(Level::High);
+            } else {
+                led.write(Level::Low);
+            }
         }
     }
 }
